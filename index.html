@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Trânsito Seguro - Jogo Educativo</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1769aa;
+  --blue2:#0d47a1;
+  --green:#19a974;
+  --red:#e53935;
+  --yellow:#ffc107;
+  --dark:#17202a;
+  --gray:#eef3f7;
+  --white:#fff;
+  --shadow:0 12px 30px rgba(0,0,0,.15);
+}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(135deg,#dff4ff,#eef8f0);
+  color:var(--dark);
+  min-height:100vh;
+}
+button{
+  border:0;
+  cursor:pointer;
+  font-weight:bold;
+  transition:.2s;
+}
+button:hover{transform:translateY(-2px)}
+.hidden{display:none!important}
+
+/* CABEÇALHO */
+header{
+  background:linear-gradient(135deg,var(--blue2),var(--blue));
+  color:white;
+  padding:16px 5%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  position:sticky;
+  top:0;
+  z-index:10;
+  box-shadow:0 4px 15px rgba(0,0,0,.2);
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logoIcon{
+  background:white;
+  color:var(--blue2);
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:25px;
+}
+.logo h1{font-size:20px}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{
+  background:rgba(255,255,255,.16);
+  padding:8px 13px;
+  border-radius:20px;
+  font-size:14px;
+}
+
+/* CONTAINER */
+main{
+  width:min(1100px,92%);
+  margin:30px auto;
+}
+.screen{
+  animation:fade .4s ease;
+}
+@keyframes fade{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* MENU */
+.hero{
+  text-align:center;
+  padding:45px 20px;
+}
+.hero .big{
+  font-size:75px;
+  margin-bottom:15px;
+}
+.hero h2{
+  font-size:clamp(28px,5vw,48px);
+  color:var(--blue2);
+  margin-bottom:12px;
+}
+.hero p{
+  max-width:700px;
+  margin:auto;
+  color:#52606d;
+  font-size:18px;
+  line-height:1.6;
+}
+.modes{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  margin-top:35px;
+}
+.card{
+  background:white;
+  border-radius:22px;
+  padding:28px;
+  box-shadow:var(--shadow);
+  text-align:center;
+}
+.cardIcon{font-size:48px;margin-bottom:15px}
+.card h3{margin-bottom:10px;font-size:22px}
+.card p{
+  color:#667;
+  line-height:1.5;
+  min-height:65px;
+}
+.primary{
+  background:var(--blue2);
+  color:white;
+  padding:13px 22px;
+  border-radius:12px;
+  margin-top:18px;
+  font-size:16px;
+}
+.green{background:var(--green)}
+.yellow{background:var(--yellow);color:#222}
+.red{background:var(--red);color:white}
+
+/* TÍTULO */
+.titleBar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+  gap:15px;
+}
+.titleBar h2{color:var(--blue2)}
+.back{
+  background:white;
+  color:var(--blue2);
+  padding:9px 15px;
+  border-radius:10px;
+}
+
+/* ÁREA DE JOGO */
+.gameBox{
+  background:white;
+  border-radius:24px;
+  padding:25px;
+  box-shadow:var(--shadow);
+}
+.progress{
+  height:12px;
+  background:#e1e7ec;
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:25px;
+}
+.progress div{
+  height:100%;
+  background:linear-gradient(90deg,var(--green),#65d6a7);
+  width:0%;
+  transition:.4s;
+}
+
+/* CIDADE */
+.city{
+  position:relative;
+  height:390px;
+  overflow:hidden;
+  border-radius:18px;
+  background:#81c784;
+  border:5px solid #456;
+}
+.sky{
+  position:absolute;
+  inset:0 0 58% 0;
+  background:linear-gradient(#6ec6ff,#c9efff);
+}
+.sun{
+  position:absolute;
+  right:7%;
+  top:20px;
+  width:60px;
+  height:60px;
+  background:#ffd54f;
+  border-radius:50%;
+}
+.building{
+  position:absolute;
+  bottom:42%;
+  width:100px;
+  height:130px;
+  background:#78909c;
+  box-shadow:inset 0 0 0 5px #607d8b;
+}
+.b1{left:4%}
+.b2{left:17%;height:170px;background:#90a4ae}
+.b3{right:4%;height:155px;background:#607d8b}
+.window{
+  width:15px;height:20px;background:#ffe082;
+  display:inline-block;margin:10px 7px;
+}
+.road{
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:43%;
+  background:#41464c;
+}
+.road:after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:0;
+  width:100%;
+  border-top:7px dashed #f5f5f5;
+}
+.sidewalk{
+  position:absolute;
+  bottom:43%;
+  width:100%;
+  height:18px;
+  background:#bdbdbd;
+}
+.crosswalk{
+  position:absolute;
+  bottom:5%;
+  left:42%;
+  width:150px;
+  height:100px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  z-index:3;
+}
+.crosswalk span{
+  height:10px;
+  background:white;
+}
+.person{
+  position:absolute;
+  bottom:31%;
+  left:15%;
+  font-size:48px;
+  z-index:5;
+  transition:.6s;
+}
+.car{
+  position:absolute;
+  bottom:9%;
+  left:-130px;
+  font-size:58px;
+  z-index:4;
+  transition:3s linear;
+}
+.car.move{left:calc(100% + 130px)}
+
+/* DESAFIOS */
+.question{
+  font-size:23px;
+  line-height:1.4;
+  margin:15px 0 20px;
+}
+.options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+.option{
+  padding:17px;
+  background:#f5f8fa;
+  border:3px solid transparent;
+  border-radius:14px;
+  text-align:left;
+  font-size:16px;
+}
+.option:hover{border-color:var(--blue)}
+.option.correct{
+  background:#d9f8e9;
+  border-color:var(--green);
+}
+.option.wrong{
+  background:#ffe0e0;
+  border-color:var(--red);
+}
+.feedback{
+  margin-top:18px;
+  padding:15px;
+  border-radius:12px;
+  line-height:1.5;
+  background:#edf5ff;
+}
+.next{
+  display:block;
+  margin:20px auto 0;
+  background:var(--blue2);
+  color:white;
+  padding:13px 25px;
+  border-radius:12px;
+}
+
+/* PLACAS */
+.signs{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:15px;
+  margin:20px 0;
+}
+.sign{
+  width:90px;
+  height:90px;
+  display:grid;
+  place-items:center;
+  font-size:45px;
+  font-weight:bold;
+}
+.stop{
+  background:#e53935;
+  color:white;
+  clip-path:polygon(25% 7%,75% 7%,93% 25%,93% 75%,75% 93%,25% 93%,7% 75%,7% 25%);
+}
+.warn{
+  background:#ffd54f;
+  transform:rotate(45deg);
+  color:#222;
+}
+.warn span{transform:rotate(-45deg)}
+.info{
+  border-radius:50%;
+  background:#1976d2;
+  color:white;
+}
+.semaphore{
+  width:70px;
+  padding:12px;
+  border-radius:35px;
+  background:#20252a;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.light{
+  width:35px;height:35px;
+  border-radius:50%;
+  margin:auto;
+  opacity:.3;
+}
+.light.on{opacity:1}
+.lred{background:red}
+.lyellow{background:#ffc107}
+.lgreen{background:#00c853}
+
+/* QUIZ */
+.quizCard{
+  background:white;
+  border-radius:22px;
+  padding:28px;
+  box-shadow:var(--shadow);
+}
+.quizNumber{
+  color:var(--blue);
+  font-weight:bold;
+  margin-bottom:8px;
+}
+.quizAnswer{
+  width:100%;
+  padding:16px;
+  margin:8px 0;
+  text-align:left;
+  border-radius:12px;
+  background:#f2f6f9;
+  border:2px solid #d9e2e8;
+}
+.quizAnswer:hover{background:#e4f1ff}
+.quizAnswer.correct{background:#c8f7dc;border-color:#19a974}
+.quizAnswer.wrong{background:#ffd5d5;border-color:#e53935}
+.quizExplanation{
+  margin-top:15px;
+  padding:14px;
+  background:#edf6ff;
+  border-radius:12px;
+  line-height:1.5;
+}
+
+/* FINAL */
+.result{
+  text-align:center;
+  background:white;
+  padding:45px 25px;
+  border-radius:25px;
+  box-shadow:var(--shadow);
+}
+.trophy{font-size:80px}
+.scoreBig{
+  font-size:55px;
+  color:var(--blue2);
+  font-weight:bold;
+  margin:15px;
+}
+.badge{
+  display:inline-block;
+  padding:10px 18px;
+  background:#e8f5e9;
+  color:#176b3a;
+  border-radius:20px;
+  margin:8px;
+}
+
+/* RESPONSIVO */
+@media(max-width:750px){
+  .modes{grid-template-columns:1fr}
+  .options{grid-template-columns:1fr}
+  header{align-items:flex-start;flex-direction:column}
+  .city{height:320px}
+  .building{transform:scale(.75);transform-origin:bottom}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logoIcon">🚦</div>
+    <h1>Trânsito Seguro</h1>
+  </div>
+  <div class="stats">
+    <div class="stat">⭐ Pontos: <span id="score">0</span></div>
+    <div class="stat">❤️ Vidas: <span id="lives">3</span></div>
+  </div>
+</header>
+
+<main>
+
+<!-- MENU -->
+<section id="menu" class="screen">
+  <div class="hero">
+    <div class="big">🚸🚦🚗</div>
+    <h2>Trânsito Seguro</h2>
+    <p>
+      Aprenda brincando! Descubra como pedestres, ciclistas,
+      passageiros e motoristas podem ajudar a construir um trânsito
+      mais seguro para todos.
+    </p>
+
+    <div class="modes">
+      <div class="card">
+        <div class="cardIcon">🚸</div>
+        <h3>Missão Pedestre</h3>
+        <p>
+          Atravesse a rua tomando decisões seguras e aprenda
+          sobre faixas, semáforos e atenção.
+        </p>
+        <button class="primary" onclick="startPedestrian()">
+          Começar
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="cardIcon">🛑</div>
+        <h3>Desafios</h3>
+        <p>
+          Analise situações do trânsito e escolha a atitude
+          mais segura.
+        </p>
+        <button class="primary green" onclick="startChallenges()">
+          Jogar
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="cardIcon">🧠</div>
+        <h3>Quiz</h3>
+        <p>
+          Teste seus conhecimentos sobre educação e segurança
+          no trânsito.
+        </p>
+        <button class="primary yellow" onclick="startQuiz()">
+          Responder
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PEDESTRE -->
+<section id="pedestrian" class="screen hidden">
+  <div class="titleBar">
+    <h2>🚸 Missão Pedestre</h2>
+    <button class="back" onclick="goMenu()">← Menu</button>
+  </div>
+
+  <div class="gameBox">
+    <div class="progress">
+      <div id="pedProgress"></div>
+    </div>
+
+    <div class="city">
+      <div class="sky"></div>
+      <div class="sun"></div>
+
+      <div class="building b1">
+        <span class="window"></span><span class="window"></span>
+        <span class="window"></span><span class="window"></span>
+      </div>
+      <div class="building b2">
+        <span class="window"></span><span class="window"></span>
+        <span class="window"></span><span class="window"></span>
+      </div>
+      <div class="building b3">
+        <span class="window"></span><span class="window"></span>
+        <span class="window"></span><span class="window"></span>
+      </div>
+
+      <div class="sidewalk"></div>
+      <div class="road"></div>
+
+      <div class="crosswalk">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+
+      <div id="pedestrianPerson" class="person">🧍</div>
+      <div id="car" class="car">🚗</div>
+    </div>
+
+    <div id="pedQuestion" class="question"></div>
+    <div id="pedOptions" class="options"></div>
+    <div id="pedFeedback" class="feedback hidden"></div>
+    <button id="pedNext" class="next hidden" onclick="nextPedestrian()">
+      Próxima situação →
+    </button>
+  </div>
+</section>
+
+<!-- DESAFIOS -->
+<section id="challenges" class="screen hidden">
+  <div class="titleBar">
+    <h2>🛑 Desafios de Segurança</h2>
+    <button class="back" onclick="goMenu()">← Menu</button>
+  </div>
+
+  <div class="gameBox">
+
+    <div class="signs">
+      <div class="sign stop">PARE</div>
+      <div class="sign warn"><span>⚠</span></div>
+      <div class="sign info">ℹ</div>
+
+      <div class="semaphore">
+        <div class="light lred on"></div>
+        <div class="light lyellow"></div>
+        <div class="light lgreen"></div>
+      </div>
+    </div>
+
+    <div class="progress">
+      <div id="challengeProgress"></div>
+    </div>
+
+    <div id="challengeQuestion" class="question"></div>
+    <div id="challengeOptions" class="options"></div>
+    <div id="challengeFeedback" class="feedback hidden"></div>
+
+    <button id="challengeNext" class="next hidden"
+      onclick="nextChallenge()">
+      Próximo desafio →
+    </button>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="screen hidden">
+  <div class="titleBar">
+    <h2>🧠 Quiz de Educação no Trânsito</h2>
+    <button class="back" onclick="goMenu()">← Menu</button>
+  </div>
+
+  <div class="quizCard">
+    <div class="quizNumber" id="quizNumber"></div>
+    <div id="quizQuestion" class="question"></div>
+    <div id="quizOptions"></div>
+    <div id="quizExplanation" class="quizExplanation hidden"></div>
+
+    <button id="quizNext" class="next hidden" onclick="nextQuiz()">
+      Próxima pergunta →
+    </button>
+  </div>
+</section>
+
+<!-- RESULTADO -->
+<section id="result" class="screen hidden">
+  <div class="result">
+    <div class="trophy" id="resultIcon">🏆</div>
+    <h2>Missão concluída!</h2>
+    <p style="margin-top:10px">
+      Você terminou as atividades de educação no trânsito.
+    </p>
+
+    <div class="scoreBig" id="finalScore">0</div>
+
+    <div id="resultMessage"></div>
+
+    <div>
+      <span class="badge">🚸 Pedestres</span>
+      <span class="badge">🚦 Sinalização</span>
+      <span class="badge">🛑 Segurança</span>
+      <span class="badge">🧠 Conhecimento</span>
+    </div>
+
+    <br>
+
+    <button class="primary" onclick="goMenu()">
+      Jogar novamente
+    </button>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* =========================================================
+   SISTEMA PRINCIPAL
+   ========================================================= */
+
+let score = 0;
+let lives = 3;
+
+function updateStats(){
+  document.getElementById("score").textContent = score;
+  document.getElementById("lives").textContent = lives;
+}
+
+function addScore(points){
+  score += points;
+  updateStats();
+}
+
+function loseLife(){
+  lives--;
+  updateStats();
+
+  if(lives <= 0){
+    showResult();
+  }
+}
+
+function hideAll(){
+  document.querySelectorAll(".screen")
+    .forEach(el => el.classList.add("hidden"));
+}
+
+function show(id){
+  hideAll();
+  document.getElementById(id).classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function goMenu(){
+  show("menu");
+}
+
+function showResult(){
+  show("result");
+
+  document.getElementById("finalScore").textContent =
+    score + " pontos";
+
+  let msg = "";
+  let icon = "🏆";
+
+  if(score >= 100){
+    msg = "Excelente! Você demonstrou ótimo conhecimento sobre segurança no trânsito.";
+    icon = "🥇";
+  }else if(score >= 60){
+    msg = "Muito bem! Você conhece várias atitudes importantes para um trânsito seguro.";
+    icon = "🥈";
+  }else{
+    msg = "Continue praticando. Aprender as regras de segurança ajuda a proteger todos.";
+    icon = "🚦";
+  }
+
+  document.getElementById("resultMessage").innerHTML =
+    "<p style='margin:15px auto;max-width:650px;line-height:1.6'>" +
+    msg + "</p>";
+
+  document.getElementById("resultIcon").textContent = icon;
+}
+
+/* =========================================================
+   MISSÃO PEDESTRE
+   ========================================================= */
+
+const pedestrianQuestions = [
+  {
+    q:"Você precisa atravessar uma avenida. Qual atitude é mais segura?",
+    options:[
+      "Atravessar correndo em qualquer lugar",
+      "Usar a faixa de pedestres e observar o trânsito",
+      "Olhar somente para o celular",
+      "Seguir outro pedestre sem olhar"
+    ],
+    correct:1,
+    feedback:"A faixa de pedestres é um local apropriado para a travessia. Mesmo nela, é importante observar o trânsito e atravessar com atenção."
+  },
+  {
+    q:"O semáforo para pedestres está vermelho. O que fazer?",
+    options:[
+      "Atravessar rapidamente",
+      "Esperar o sinal permitir a travessia",
+      "Atravessar se não houver carro perto",
+      "Correr até o outro lado"
+    ],
+    correct:1,
+    feedback:"O pedestre deve respeitar a sinalização e aguardar o momento adequado para atravessar."
+  },
+  {
+    q:"Ao atravessar uma rua, qual comportamento aumenta a segurança?",
+    options:[
+      "Usar o celular enquanto caminha",
+      "Caminhar de costas para os veículos",
+      "Manter atenção ao ambiente e aos veículos",
+      "Usar fones em volume máximo"
+    ],
+    correct:2,
+    feedback:"A atenção ao ambiente permite perceber veículos, bicicletas, sinais e outras situações de risco."
+  },
+  {
+    q:"Você está diante de uma faixa de pedestres. O que deve fazer antes de atravessar?",
+    options:[
+      "Verificar se os veículos estão parando e atravessar com atenção",
+      "Fechar os olhos",
+      "Correr sem olhar",
+      "Ficar olhando apenas para o celular"
+    ],
+    correct:0,
+    feedback:"É importante observar os veículos e ter certeza de que a travessia pode ser feita com segurança."
+  }
+];
+
+let pedIndex = 0;
+
+function startPedestrian(){
+  pedIndex = 0;
+  show("pedestrian");
+  renderPedestrian();
+}
+
+function renderPedestrian(){
+  if(pedIndex >= pedestrianQuestions.length){
+    addScore(20);
+    showResult();
+    return;
+  }
+
+  const item = pedestrianQuestions[pedIndex];
+
+  document.getElementById("pedQuestion").textContent = item.q;
+
+  const area = document.getElementById("pedOptions");
+  area.innerHTML = "";
+
+  item.options.forEach((option,index)=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = option;
+    btn.onclick = ()=>answerPedestrian(index,btn);
+    area.appendChild(btn);
+  });
+
+  document.getElementById("pedFeedback").classList.add("hidden");
+  document.getElementById("pedNext").classList.add("hidden");
+
+  document.getElementById("pedProgress").style.width =
+    ((pedIndex / pedestrianQuestions.length) * 100) + "%";
+
+  const car = document.getElementById("car");
+  car.classList.remove("move");
+  setTimeout(()=>car.classList.add("move"),200);
+}
+
+function answerPedestrian(index,button){
+  const item = pedestrianQuestions[pedIndex];
+  const buttons = document.querySelectorAll("#pedOptions .option");
+
+  buttons.forEach(b=>b.disabled=true);
+
+  if(index === item.correct){
+    button.classList.add("correct");
+    addScore(10);
+
+    document.getElementById("pedFeedback").innerHTML =
+      "✅ <b>Muito bem!</b> " + item.feedback;
+  }else{
+    button.classList.add("wrong");
+    buttons[item.correct].classList.add("correct");
+    loseLife();
+
+    document.getElementById("pedFeedback").innerHTML =
+      "❌ <b>Observe a alternativa correta.</b> " + item.feedback;
+  }
+
+  document.getElementById("pedFeedback").classList.remove("hidden");
+  document.getElementById("pedNext").classList.remove("hidden");
+}
+
+function nextPedestrian(){
+  pedIndex++;
+  renderPedestrian();
+}
+
+/* =========================================================
+   DESAFIOS
+   ========================================================= */
+
+const challenges = [
+  {
+    q:"Você está em um carro e encontra a placa PARE. Qual é a atitude adequada?",
+    options:[
+      "Diminuir um pouco e continuar",
+      "Parar e prosseguir somente quando for seguro",
+      "Buzinar e passar",
+      "Acelerar para liberar a via"
+    ],
+    correct:1,
+    feedback:"A placa PARE indica a necessidade de parada. Depois, o condutor deve verificar as condições da via antes de prosseguir."
+  },
+  {
+    q:"Por que o cinto de segurança deve ser usado?",
+    options:[
+      "Somente para evitar multas",
+      "Para aumentar a segurança dos ocupantes",
+      "Somente em viagens longas",
+      "Somente no banco dianteiro"
+    ],
+    correct:1,
+    feedback:"O cinto é um importante equipamento de segurança e deve ser utilizado pelos ocupantes do veículo."
+  },
+  {
+    q:"Qual atitude é adequada ao dirigir próximo a uma escola?",
+    options:[
+      "Aumentar a velocidade",
+      "Redobrar a atenção e respeitar a sinalização",
+      "Usar o celular",
+      "Ultrapassar veículos parados sem observar"
+    ],
+    correct:1,
+    feedback:"Áreas próximas a escolas podem ter grande circulação de crianças e pedestres, exigindo atenção redobrada."
+  },
+  {
+    q:"Qual comportamento contribui para um trânsito mais seguro?",
+    options:[
+      "Respeitar as regras e sinalizações",
+      "Disputar espaço com outros veículos",
+      "Ignorar os sinais",
+      "Usar o celular enquanto dirige"
+    ],
+    correct:0,
+    feedback:"Respeitar as regras de circulação e a sinalização ajuda a organizar o trânsito e reduzir situações de risco."
+  }
+];
+
+let challengeIndex = 0;
+
+function startChallenges(){
+  challengeIndex = 0;
+  show("challenges");
+  renderChallenge();
+}
+
+function renderChallenge(){
+  if(challengeIndex >= challenges.length){
+    addScore(20);
+    showResult();
+    return;
+  }
+
+  const item = challenges[challengeIndex];
+
+  document.getElementById("challengeQuestion").textContent = item.q;
+
+  const area = document.getElementById("challengeOptions");
+  area.innerHTML = "";
+
+  item.options.forEach((option,index)=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = option;
+    btn.onclick = ()=>answerChallenge(index,btn);
+    area.appendChild(btn);
+  });
+
+  document.getElementById("challengeFeedback").classList.add("hidden");
+  document.getElementById("challengeNext").classList.add("hidden");
+
+  document.getElementById("challengeProgress").style.width =
+    ((challengeIndex / challenges.length) * 100) + "%";
+}
+
+function answerChallenge(index,button){
+  const item = challenges[challengeIndex];
+  const buttons = document.querySelectorAll("#challengeOptions .option");
+
+  buttons.forEach(b=>b.disabled=true);
+
+  if(index === item.correct){
+    button.classList.add("correct");
+    addScore(10);
+
+    document.getElementById("challengeFeedback").innerHTML =
+      "✅ <b>Resposta correta!</b> " + item.feedback;
+  }else{
+    button.classList.add("wrong");
+    buttons[item.correct].classList.add("correct");
+    loseLife();
+
+    document.getElementById("challengeFeedback").innerHTML =
+      "❌ " + item.feedback;
+  }
+
+  document.getElementById("challengeFeedback").classList.remove("hidden");
+  document.getElementById("challengeNext").classList.remove("hidden");
+}
+
+function nextChallenge(){
+  challengeIndex++;
+  renderChallenge();
+}
+
+/* =========================================================
+   QUIZ
+   ========================================================= */
+
+const quizQuestions = [
+  {
+    q:"Qual destes é um equipamento de segurança usado pelos ocupantes de um veículo?",
+    options:[
+      "Cinto de segurança",
+      "Retrovisor externo",
+      "Placa de trânsito",
+      "Faixa de pedestres"
+    ],
+    correct:0,
+    explanation:"O cinto de segurança é utilizado pelos ocupantes para aumentar a proteção em situações de colisão."
+  },
+  {
+    q:"Qual destes comportamentos é mais seguro ao atravessar uma rua?",
+    options:[
+      "Usar a faixa e observar o trânsito",
+      "Atravessar entre veículos sem olhar",
+      "Olhar apenas para o celular",
+      "Correr sem verificar a via"
+    ],
+    correct:0,
+    explanation:"A travessia deve ser feita com atenção, usando locais apropriados e observando as condições do trânsito."
+  },
+  {
+    q:"O que significa uma placa de PARE?",
+    options:[
+      "Aumentar a velocidade",
+      "Parar e verificar a situação antes de prosseguir",
+      "Estacionar por tempo indeterminado",
+      "Dar preferência somente aos ciclistas"
+    ],
+    correct:1,
+    explanation:"A sinalização de PARE determina a parada do veículo antes de prosseguir."
+  },
+  {
+    q:"Por que não devemos usar o celular enquanto dirigimos?",
+    options:[
+      "Porque reduz a atenção dedicada à condução",
+      "Porque o celular deixa o carro mais pesado",
+      "Porque aumenta o tamanho do veículo",
+      "Porque muda a cor do semáforo"
+    ],
+    correct:0,
+    explanation:"O uso do celular pode desviar a atenção da condução e prejudicar a percepção do ambiente."
+  },
+  {
+    q:"Qual atitude ajuda a construir um trânsito mais seguro?",
+    options:[
+      "Respeitar as regras de circulação",
+      "Ignorar a sinalização",
+      "Acelerar em áreas movimentadas",
+      "Disputar espaço com pedestres"
+    ],
+    correct:0,
+    explanation:"O respeito às regras e à sinalização contribui para uma circulação mais organizada e segura."
+  },
+  {
+    q:"O que um pedestre deve fazer ao encontrar o sinal vermelho para pedestres?",
+    options:[
+      "Atravessar correndo",
+      "Esperar o momento permitido",
+      "Ignorar o semáforo",
+      "Atravessar somente olhando para trás"
+    ],
+    correct:1,
+    explanation:"O pedestre deve respeitar a sinalização e aguardar o sinal adequado para a travessia."
+  },
+  {
+    q:"Em uma área com grande circulação de pessoas, qual atitude é adequada?",
+    options:[
+      "Redobrar a atenção",
+      "Acelerar",
+      "Usar o celular enquanto conduz",
+      "Ignorar a sinalização"
+    ],
+    correct:0,
+    explanation:"A presença de muitos pedestres exige atenção especial e respeito à sinalização."
+  },
+  {
+    q:"Qual é uma atitude segura para o passageiro de um veículo?",
+    options:[
+      "Usar o cinto de segurança",
+      "Ficar em pé durante o movimento",
+      "Colocar a cabeça para fora da janela",
+      "Destravar a porta durante a viagem"
+    ],
+    correct:0,
+    explanation:"O uso do cinto é uma medida importante de proteção para os passageiros."
+  }
+];
+
+let quizIndex = 0;
+let quizCorrect = 0;
+
+function startQuiz(){
+  quizIndex = 0;
+  quizCorrect = 0;
+  show("quiz");
+  renderQuiz();
+}
+
+function renderQuiz(){
+  if(quizIndex >= quizQuestions.length){
+    addScore(quizCorrect * 5);
+    showResult();
+    return;
+  }
+
+  const item = quizQuestions[quizIndex];
+
+  document.getElementById("quizNumber").textContent =
+    "Pergunta " + (quizIndex + 1) +
+    " de " + quizQuestions.length;
+
+  document.getElementById("quizQuestion").textContent = item.q;
+
+  const area = document.getElementById("quizOptions");
+  area.innerHTML = "";
+
+  item.options.forEach((option,index)=>{
+    const btn = document.createElement("button");
+    btn.className = "quizAnswer";
+    btn.textContent = option;
+    btn.onclick = ()=>answerQuiz(index,btn);
+    area.appendChild(btn);
+  });
+
+  document.getElementById("quizExplanation").classList.add("hidden");
+  document.getElementById("quizNext").classList.add("hidden");
+}
+
+function answerQuiz(index,button){
+  const item = quizQuestions[quizIndex];
+  const buttons = document.querySelectorAll(".quizAnswer");
+
+  buttons.forEach(b=>b.disabled=true);
+
+  if(index === item.correct){
+    button.classList.add("correct");
+    quizCorrect++;
+    addScore(5);
+  }else{
+    button.classList.add("wrong");
+    buttons[item.correct].classList.add("correct");
+    loseLife();
+
+    if(lives <= 0)return;
+  }
+
+  document.getElementById("quizExplanation").textContent =
+    item.explanation;
+
+  document.getElementById("quizExplanation").classList.remove("hidden");
+  document.getElementById("quizNext").classList.remove("hidden");
+}
+
+function nextQuiz(){
+  quizIndex++;
+  renderQuiz();
+}
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+
+updateStats();
+</script>
+
+</body>
+</html>
